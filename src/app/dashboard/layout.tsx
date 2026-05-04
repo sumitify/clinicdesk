@@ -10,6 +10,7 @@ const navItems = [
   { href: '/dashboard/appointments', label: 'Appointments', icon: Calendar },
   { href: '/dashboard/patients', label: 'Patients', icon: Users },
   { href: '/dashboard/providers', label: 'Providers', icon: Stethoscope },
+    { href: '/dashboard/providers/availability', label: 'Availability', icon: Calendar },
   { href: '/dashboard/visit-types', label: 'Visit Types', icon: Activity },
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
