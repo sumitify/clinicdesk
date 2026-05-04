@@ -1,5 +1,8 @@
+'use client'
 import { Link } from 'next/link'
-import { User, Calendar, Users, Stethoscope, Activity, Settings, LogOut } from 'lucide-react'
+import { Calendar, Users, Stethoscope, Activity, Settings, LogOut } from 'lucide-react'
+import { createClient } from '@/lib/supabase/client'
+import { useRouter } from 'next/navigation'
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: Activity },
@@ -10,7 +13,20 @@ const navItems = [
   { href: '/dashboard/settings', label: 'Settings', icon: Settings },
 ]
 
-function Sidebar({ activePath }: { activePath: string }) {
+function SignOutButton() {
+  const router = useRouter()
+  const supabase = createClient()
+  const handleSignOut = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
+  return <button onClick={handleSignOut} className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 w-full"><LogOut className="h-4 w-4" /> Sign out</button>
+}
+
+function Sidebar() {
+  if (typeof window === 'undefined') return null
+  const pathname = window.location.pathname
   return (
     <aside className="w-60 bg-white border-r border-slate-200 min-h-screen p-4 flex flex-col">
       <div className="mb-6 px-2">
@@ -19,28 +35,23 @@ function Sidebar({ activePath }: { activePath: string }) {
       <nav className="space-y-1 flex-1">
         {navItems.map(item => {
           const Icon = item.icon
-          const isActive = item.href === activePath
+          const isActive = item.href === pathname
           return (
-            <Link key={item.href} href={item.href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
+            <Link key={item.href} href={item.href} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${isActive ? 'bg-blue-50 text-blue-700' : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}`}>
               <Icon className="h-4 w-4" /> {item.label}
             </Link>
           )
         })}
       </nav>
-      <form action="/api/sign-out" method="POST">
-        <button type="submit" className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 w-full">
-          <LogOut className="h-4 w-4" /> Sign out
-        </button>
-      </form>
+      <SignOutButton />
     </aside>
   )
 }
 
-export default function DashboardLayout({ children, params }: { children: React.ReactNode, params: Promise<{ clinicSlug?: string }> }) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen flex">
-      <Sidebar activePath={typeof window !== 'undefined' ? window.location.pathname : '/dashboard'} />
+      <Sidebar />
       <main className="flex-1 overflow-auto">{children}</main>
     </div>
   )
