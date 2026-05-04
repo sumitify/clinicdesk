@@ -6,14 +6,14 @@ import { toast } from 'sonner'
 
 export default function SettingsPage() {
   const supabase = createClient()
-  const [clinic, setClinic] = useState<{ clinic_name: string; phone: string } | null>(null)
+    const [clinic, setClinic] = useState<{ id: string; clinic_name: string; phone: string } | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [f, setF] = useState({ clinic_name: '', phone: '' })
 
   useEffect(() => {
     const load = async () => {
-      const { data } = await supabase.from('clinics').select('clinic_name, phone').single()
+            const { data } = await supabase.from('clinics').select('id, clinic_name, phone').single()
       if (data) {
         setClinic(data)
         setF({ clinic_name: data.clinic_name, phone: data.phone || '' })
